@@ -1,0 +1,42 @@
+@font-face {
+	font-family: 'Glyphicons Halflings';
+	src: url('../fonts/glyphicons-halflings-regular.eot');
+	src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+
+
+body {
+	font-family: "Arial", Microsoft YaHei, sans-serif;
+}
+
+small {
+	margin-left: 30px;
+}
+
+button {
+	width: 90px;
+}
+
+#subscription-list {
+	margin-top: 50px;
+	padding-bottom: 80px;
+}
+
+.subscription-box {
+	margin-top: 20px;
+}
+
+.subscription-select {
+	width: 240px;
+	height: 34px;
+}
+
+.subscription-input {
+	width: 540px;
+	height: 34px;
+}
+
+.submit-button {
+	margin-top: 30px;
+}
+
