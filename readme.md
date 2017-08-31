@@ -15,7 +15,7 @@ Voixa是一个Amazon Alexa的示例项目。在本示例项目中，我们利用
 2. ***@Nick Jiang***
 3. ***@Haipeng Qi***
 4. ***@Andrew Ren***
-5. ***David Wang***
+5. ***@David Wang***
 
 ## 项目架构
 
