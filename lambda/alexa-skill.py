@@ -4,6 +4,7 @@
 from __future__ import print_function
 import boto3
 import re
+import os
 # Just for debug
 import logging
 
@@ -14,9 +15,9 @@ TABLE_USER = 'user_subscribe'
 # DynamoDB table name for news mapping
 TABLE_NEWS = 'news'
 # S3 bucket name for full news
-S3_BUCKET = 'full-news'
+S3_BUCKET = os.getenv('S3_BUCKET')
 # S3 bucket name for text summarization
-S3_SHORT_BUCKET = 'text-summarization'
+S3_SHORT_BUCKET = os.getenv('S3_SHORT_BUCKET')
 # The words when we can not find the news which the user want
 NEWS_NO_FOUND = 'Hahaha, according to Big Five Wolves, there is nothing new.'
 

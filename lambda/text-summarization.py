@@ -4,11 +4,12 @@
 import boto3
 import time
 import re
+Import os
 
 # S3 bucket name for full news
-WEBSITE_BUCKET = 'full-news'
+WEBSITE_BUCKET = os.getenv('WEBSITE_BUCKET')
 # S3 bucket name for text summarization
-RESULT_BUCKET = 'text-summarization'
+RESULT_BUCKET = os.getenv('RESULT_BUCKET')
 # DynamoDB table name for news mapping
 NEWS_TABLE = 'news'
 # Hard code for Demo (Need to get different sites from DynamoDB)

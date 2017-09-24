@@ -1,0 +1,596 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Voixa project cloudFormation created by Big-Five-Wolves Team. Voixa is a demo for Amazon Alexa and serverless architecture. For more details, Please go to https://github.com/finishy1995/voixa .",
+    "Parameters": {
+        "SourceBucketName": {
+            "Type" : "String",
+            "Description" : "Source bucket name which bucket name you have chosen to store the files in existing Amazon S3."
+        },
+        "FullNewsStoredBucketName": {
+            "Type" : "String",
+            "Description" : "Full news stored bucket name which bucket name you will choose to store the full news."
+        },
+        "ShortNewsStoredBucketName": {
+            "Type" : "String",
+            "Description" : "Short news stored bucket name which bucket name you will choose to store the short news."
+        },
+        "StaticWebBucketName": {
+            "Type" : "String",
+            "Description" : "Static web bucket name which bucket name you will choose to be a static web."
+        }
+    },
+    "Resources": {
+        "LambdaCrawlerCommander": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Code": {
+                    "S3Bucket": {"Ref" : "SourceBucketName"},
+                    "S3Key": "lambda/crawler-commander.py.zip"
+                },
+                "Description": "Voixa project crawler commander.",
+                "Environment": {},
+                "FunctionName": "voixa-crawler-commander",
+                "Handler": "crawler-commander.lambda_handler",
+                "MemorySize": 128,
+                "Role": { "Fn::GetAtt" : [ "IAMCrawlerCommander", "Arn" ] },
+                "Runtime": "python2.7",
+                "Timeout": 20
+            },
+            "DependsOn": [
+                "IAMCrawlerCommander"
+            ]
+        },
+        "LambdaCrawlerDetector": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Code": {
+                    "S3Bucket": {"Ref" : "SourceBucketName"},
+                    "S3Key": "lambda/crawler-detector.py.zip"
+                },
+                "Description": "Voixa project crawler detector.",
+                "Environment": {
+                    "Variables": {
+                        "WEBSITE_BUCKET": {"Ref": "FullNewsStoredBucketName"}
+                    }
+                },
+                "FunctionName": "voixa-crawler-detector",
+                "Handler": "crawler-detector.lambda_handler",
+                "MemorySize": 128,
+                "Role": { "Fn::GetAtt" : [ "IAMCrawlerDetector", "Arn" ] },
+                "Runtime": "python2.7",
+                "Timeout": 20
+            },
+            "DependsOn": [
+                "IAMCrawlerDetector"
+            ]
+        },
+        "LambdaTextSummarization": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Code": {
+                    "S3Bucket": {"Ref" : "SourceBucketName"},
+                    "S3Key": "lambda/text-summarization.py.zip"
+                },
+                "Description": "Voixa project text summarization.",
+                "Environment": {
+                    "Variables": {
+                        "WEBSITE_BUCKET": {"Ref": "FullNewsStoredBucketName"},
+                        "RESULT_BUCKET": {"Ref": "ShortNewsStoredBucketName"}
+                    }
+                },
+                "FunctionName": "voixa-text-summarization",
+                "Handler": "text-summarization.lambda_handler",
+                "MemorySize": 128,
+                "Role": { "Fn::GetAtt" : [ "IAMTextSummarization", "Arn" ] },
+                "Runtime": "python3.6",
+                "Timeout": 300
+            },
+            "DependsOn": [
+                "IAMTextSummarization"
+            ]
+        },
+        "LambdaAlexaSkill": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Code": {
+                    "S3Bucket": {"Ref" : "SourceBucketName"},
+                    "S3Key": "lambda/alexa-skill.py.zip"
+                },
+                "Description": "Voixa project alexa skill function.",
+                "Environment": {
+                    "Variables": {
+                        "S3_BUCKET": {"Ref": "FullNewsStoredBucketName"},
+                        "S3_SHORT_BUCKET": {"Ref": "ShortNewsStoredBucketName"}
+                    }
+                },
+                "FunctionName": "voixa-alexa-skill",
+                "Handler": "alexa-skill.lambda_handler",
+                "MemorySize": 128,
+                "Role": { "Fn::GetAtt" : [ "IAMAlexaSkill", "Arn" ] },
+                "Runtime": "python2.7",
+                "Timeout": 60
+            },
+            "DependsOn": [
+                "IAMAlexaSkill"
+            ]
+        },
+        "IAMCrawlerCommander": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Path": "/",
+                "RoleName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            {
+                                "Ref": "AWS::Region"
+                            },
+                            "voixa-crawler-commander"
+                        ]
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyName": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "voixa-crawler-commander-policy"
+                                ]
+                            ]
+                        },
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Resource": "arn:aws:logs:*:*:*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "lambda:InvokeFunction"
+                                    ],
+                                    "Resource": { "Fn::GetAtt" : [ "LambdaCrawlerDetector", "Arn" ] }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "DependsOn": [
+                "LambdaCrawlerDetector"
+            ]
+        },
+        "IAMCrawlerDetector": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Path": "/",
+                "RoleName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            {
+                                "Ref": "AWS::Region"
+                            },
+                            "voixa-crawler-detector"
+                        ]
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyName": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "voixa-crawler-detector-policy"
+                                ]
+                            ]
+                        },
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Resource": "arn:aws:logs:*:*:*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "dynamodb:*"
+                                    ],
+                                    "Resource": [
+                                        { "Fn::GetAtt": ["DDBNewsTable", "Arn"] },
+                                        { "Fn::GetAtt": ["DDBSiteTable", "Arn"] },
+                                        { "Fn::GetAtt": ["DDBUserSubscribeTable", "Arn"] }
+                                    ]
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:*"
+                                    ],
+                                    "Resource": [
+                                        {"Fn::Join": ["", [{"Fn::GetAtt": ["S3FullNewsStoredBucket", "Arn"] }, "/*"]]}
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "DependsOn": [
+                "DDBNewsTable",
+                "DDBSiteTable",
+                "DDBUserSubscribeTable",
+                "S3FullNewsStoredBucket"
+            ]
+        },
+        "IAMTextSummarization": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Path": "/",
+                "RoleName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            {
+                                "Ref": "AWS::Region"
+                            },
+                            "voixa-text-summarization"
+                        ]
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyName": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "voixa-text-summarization-policy"
+                                ]
+                            ]
+                        },
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Resource": "arn:aws:logs:*:*:*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "dynamodb:*"
+                                    ],
+                                    "Resource": [
+                                        { "Fn::GetAtt": ["DDBNewsTable", "Arn"] },
+                                        { "Fn::GetAtt": ["DDBSiteTable", "Arn"] },
+                                        { "Fn::GetAtt": ["DDBUserSubscribeTable", "Arn"] }
+                                    ]
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:*"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "DependsOn": [
+                "DDBNewsTable",
+                "DDBSiteTable",
+                "DDBUserSubscribeTable"
+            ]
+        },
+        "IAMAlexaSkill": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Path": "/",
+                "RoleName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            {
+                                "Ref": "AWS::Region"
+                            },
+                            "voixa-alexa-skill"
+                        ]
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyName": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "voixa-alexa-skill-policy"
+                                ]
+                            ]
+                        },
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Resource": "arn:aws:logs:*:*:*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "dynamodb:BatchGetItem",
+                                        "dynamodb:DescribeTable",
+                                        "dynamodb:GetItem",
+                                        "dynamodb:ListTables",
+                                        "dynamodb:Query",
+                                        "dynamodb:Scan",
+                                        "dynamodb:DescribeReservedCapacity",
+                                        "dynamodb:DescribeReservedCapacityOfferings",
+                                        "dynamodb:ListTagsOfResource",
+                                        "dynamodb:DescribeTimeToLive",
+                                        "dynamodb:DescribeLimits"
+                                    ],
+                                    "Resource": [
+                                        { "Fn::GetAtt": ["DDBNewsTable", "Arn"] },
+                                        { "Fn::GetAtt": ["DDBSiteTable", "Arn"] },
+                                        { "Fn::GetAtt": ["DDBUserSubscribeTable", "Arn"] }
+                                    ]
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:Get*",
+                                        "s3:List*"
+                                    ],
+                                    "Resource": [
+                                        { "Fn::GetAtt": ["S3FullNewsStoredBucket", "Arn"] },
+                                        { "Fn::GetAtt": ["S3ShortNewsStoredBucket", "Arn"] }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "DependsOn": [
+                "DDBNewsTable",
+                "DDBSiteTable",
+                "DDBUserSubscribeTable",
+                "S3FullNewsStoredBucket",
+                "S3ShortNewsStoredBucket"
+            ]
+        },
+        "S3FullNewsStoredBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": {"Ref" : "FullNewsStoredBucketName"}
+            }
+        },
+        "S3ShortNewsStoredBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": {"Ref" : "ShortNewsStoredBucketName"}
+            }
+        },
+        "S3StaticWebBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": {"Ref" : "StaticWebBucketName"},
+                "WebsiteConfiguration": {
+                    "ErrorDocument" : "error.html",
+                    "IndexDocument" : "index.html"
+                },
+                "AccessControl": "PublicRead"
+            }
+        },
+        "S3StaticWebBucketPolicy": {
+            "Type" : "AWS::S3::BucketPolicy",
+            "Properties" : {
+                "Bucket" : {"Ref" : "StaticWebBucketName"},
+                "PolicyDocument": {
+                    "Statement":[ {
+	                    "Action": [
+	                        "s3:Get*",
+                            "s3:List*"
+                        ],
+	                    "Effect": "Allow",
+	                    "Resource": {"Fn::Join": ["", ["arn:aws:s3:::", { "Ref": "StaticWebBucketName" }, "/*"]]},
+	                    "Principal": "*"
+                    } ]
+                }
+            },
+            "DependsOn": [
+                "S3StaticWebBucket"
+            ]
+        },
+        "DDBNewsTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties" : {
+                "AttributeDefinitions": [ {
+                    "AttributeName": "news_id",
+                    "AttributeType": "S"
+                } ],
+                "KeySchema" : [ {
+                    "AttributeName": "news_id",
+                    "KeyType": "HASH"
+                } ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": "5",
+                    "WriteCapacityUnits": "5"
+                },
+                "TableName": "news"
+            }
+        },
+        "DDBSiteTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties" : {
+                "AttributeDefinitions": [ {
+                    "AttributeName": "site_id",
+                    "AttributeType": "S"
+                } ],
+                "KeySchema" : [ {
+                    "AttributeName": "site_id",
+                    "KeyType": "HASH"
+                } ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": "5",
+                    "WriteCapacityUnits": "5"
+                },
+                "TableName": "site"
+            }
+        },
+        "DDBUserSubscribeTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties" : {
+                "AttributeDefinitions": [ {
+                    "AttributeName": "user_id",
+                    "AttributeType": "S"
+                } ],
+                "KeySchema" : [ {
+                    "AttributeName": "user_id",
+                    "KeyType": "HASH"
+                } ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": "5",
+                    "WriteCapacityUnits": "5"
+                },
+                "TableName": "user_subscribe"
+            }
+        },
+        "EventCronJob": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+                "Description" : "Run lambda crawler once a day.",
+                "ScheduleExpression": "cron(0 0 * * ? *)",
+                "State": "ENABLED",
+                "Targets": [ {
+                    "Arn": { "Fn::GetAtt": ["LambdaCrawlerCommander", "Arn"] },
+                    "Id": "TargetFunctionV1"
+                } ]
+            },
+            "DependsOn": [
+                "LambdaCrawlerCommander"
+            ]
+        },
+        "PermissionForEventsToInvokeLambda": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "FunctionName": { "Ref": "LambdaCrawlerCommander" },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "events.amazonaws.com",
+                "SourceArn": { "Fn::GetAtt": ["EventCronJob", "Arn"] }
+            },
+            "DependsOn": [
+                "LambdaCrawlerCommander",
+                "EventCronJob"
+            ]
+        },
+        "PermissionForS3ToInvokeLambda": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "FunctionName": { "Ref": "LambdaTextSummarization" },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "s3.amazonaws.com",
+                "SourceArn": { "Fn::GetAtt": ["S3FullNewsStoredBucket", "Arn"] }
+            },
+            "DependsOn": [
+                "LambdaTextSummarization",
+                "S3FullNewsStoredBucket"
+            ]
+        }
+    },
+    "Outputs" : {
+        "WebsiteURL" : {
+            "Value" : { "Fn::GetAtt" : [ "S3StaticWebBucket", "WebsiteURL" ] },
+            "Description" : "URL for static web hosted on S3 bucket."
+        },
+        "AlexaSkillArn": {
+            "Value": { "Fn::GetAtt" : [ "LambdaAlexaSkill", "Arn" ] },
+            "Description" : "Arn for alexa skill written by lambda python 2.7."
+        }
+    }
+}

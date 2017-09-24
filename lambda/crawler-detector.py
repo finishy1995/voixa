@@ -3,11 +3,12 @@
 
 import urllib2
 import re
+import os
 import time
 import boto3
 
 # S3 bucket name for full news 
-WEBSITE_BUCKET = 'full-news'
+WEBSITE_BUCKET = os.getenv('WEBSITE_BUCKET')
 # DynamoDB table name for news mapping
 TABLE_NAME = 'news'
 # Hard code for Demo (Need to get from lambda event)
@@ -49,7 +50,7 @@ def news_store_to_s3(topic, contain):
     file.close()
 
     now_time = time.strftime('%y-%m-%d',time.localtime(time.time()))
-    s3_filename = now_time[:2] + '/' + now_time[3:5] + '/' + now_time[6:8] + '/' + topic + '-' + SITE + '.txt'
+    s3_filename = now_time[:2] + '/' + now_time[3:5] + '/' + now_time[6:8] + '/' + topic.replace(',', '_') + '-' + SITE + '.txt'
 
     s3 = boto3.resource('s3')
     s3.Bucket(WEBSITE_BUCKET).upload_file(filename, s3_filename)
