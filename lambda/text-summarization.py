@@ -4,7 +4,7 @@
 import boto3
 import time
 import re
-Import os
+import os
 
 # S3 bucket name for full news
 WEBSITE_BUCKET = os.getenv('WEBSITE_BUCKET')
