@@ -704,6 +704,10 @@
         "AlexaSkillArn": {
             "Value": { "Fn::GetAtt" : [ "LambdaAlexaSkill", "Arn" ] },
             "Description" : "Arn for alexa skill written by lambda python 2.7."
+        },
+        "CognitoPoolId": {
+            "Value": {"Ref" : "CognitoIdentityPool"},
+            "Description" : "Cognito identity pool id for static web."
         }
     }
 }

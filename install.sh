@@ -213,6 +213,12 @@ cf_response=`aws cloudformation create-stack --stack-name ${aws_stack} --templat
 
     sleep 240s
     # TODO: Add function to track stack when creating
+
+    # Get stack outputs
+    output1=`aws cloudformation describe-stacks --stack-name $aws_stack --profile ${aws_profile} --region ${aws_region} --query Stacks[0].Outputs[0].OutputValue --output text`
+    output2=`aws cloudformation describe-stacks --stack-name $aws_stack --profile ${aws_profile} --region ${aws_region} --query Stacks[0].Outputs[1].OutputValue --output text`
+    output3=`aws cloudformation describe-stacks --stack-name $aws_stack --profile ${aws_profile} --region ${aws_region} --query Stacks[0].Outputs[2].OutputValue --output text`
+
     echo -e "[${green}Info${plain}] AWS CloudFormation stack created."
     echo
 
@@ -227,6 +233,10 @@ cf_response=`aws cloudformation create-stack --stack-name ${aws_stack} --templat
     echo
 
     # Upload Static web files
+    echo -e "[${green}Info${plain}] Static web files uploading ..."
+    cd "$cur_dir/$source_file/website"
+
+echo "const REGION = '${aws_region}';const POOL_ID = '${aws_region}';"
 }
 
 # Install Voixa
