@@ -92,7 +92,7 @@ aws_s3_source_bucket_handle() {
         fi
     done
     cd ..
-    s3_file_upload=`aws s3 cp aws-template s3://${1}/template/ --profile ${aws_profile}`
+    s3_file_upload=`aws s3 cp aws-template-with-cognito s3://${1}/template/ --profile ${aws_profile}`
     if [ "$s3_file_upload" = "" ];then
         echo -e "[${red}Error${plain}] Failed to upload files to bucket ${1}, please try again later."
 
@@ -200,7 +200,7 @@ env_install() {
 
     echo -e "[${green}Info${plain}] AWS CloudFormation stack creating ... (It may take about 4 minutes)"
 
-cf_response=`aws cloudformation create-stack --stack-name ${aws_stack} --template-url https://s3-${aws_region}.amazonaws.com/${aws_s3_source_bucket}/template/aws-template --profile ${aws_profile} --region ${aws_region} --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=FullNewsStoredBucketName,ParameterValue=${aws_s3_full_txt_bucket} ParameterKey=ShortNewsStoredBucketName,ParameterValue=${aws_s3_short_txt_bucket} ParameterKey=StaticWebBucketName,ParameterValue=${aws_s3_static_web_bucket} ParameterKey=SourceBucketName,ParameterValue=${aws_s3_source_bucket}`
+cf_response=`aws cloudformation create-stack --stack-name ${aws_stack} --template-url https://s3-${aws_region}.amazonaws.com/${aws_s3_source_bucket}/template/aws-template-with-cognito --profile ${aws_profile} --region ${aws_region} --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=FullNewsStoredBucketName,ParameterValue=${aws_s3_full_txt_bucket} ParameterKey=ShortNewsStoredBucketName,ParameterValue=${aws_s3_short_txt_bucket} ParameterKey=StaticWebBucketName,ParameterValue=${aws_s3_static_web_bucket} ParameterKey=SourceBucketName,ParameterValue=${aws_s3_source_bucket}`
 
     if [ "$cf_response" = "" ];then
         echo -e "[${red}Error${plain}] Failed to create stack, please try again later."
@@ -213,12 +213,6 @@ cf_response=`aws cloudformation create-stack --stack-name ${aws_stack} --templat
 
     sleep 240s
     # TODO: Add function to track stack when creating
-
-    # Get stack outputs
-    output1=`aws cloudformation describe-stacks --stack-name $aws_stack --profile ${aws_profile} --region ${aws_region} --query Stacks[0].Outputs[0].OutputValue --output text`
-    output2=`aws cloudformation describe-stacks --stack-name $aws_stack --profile ${aws_profile} --region ${aws_region} --query Stacks[0].Outputs[1].OutputValue --output text`
-    output3=`aws cloudformation describe-stacks --stack-name $aws_stack --profile ${aws_profile} --region ${aws_region} --query Stacks[0].Outputs[2].OutputValue --output text`
-
     echo -e "[${green}Info${plain}] AWS CloudFormation stack created."
     echo
 
@@ -236,7 +230,28 @@ cf_response=`aws cloudformation create-stack --stack-name ${aws_stack} --templat
     echo -e "[${green}Info${plain}] Static web files uploading ..."
     cd "$cur_dir/$source_file/website"
 
-echo "const REGION = '${aws_region}';const POOL_ID = '${aws_region}';"
+    # Get cognito pool id
+    for i in `aws cognito-identity list-identity-pools --max-results 10 --profile ${aws_profile} --output text --query IdentityPools --region ${aws_region}`
+    do
+        pool_name=`echo ${i} | cut -f 2`
+        if [ "$pool_name" = "voixa_identity_pool" ];then
+            aws_cognito_pool_id=`echo ${i} | cut -f 1`
+            break
+        fi
+    done
+
+    echo "const REGION = '${aws_region}';const POOL_ID = '${aws_cognito_pool_id}';" > ./js/config.js
+
+    aws s3 cp ./ s3://${aws_s3_static_web_bucket}/ --recursive
+}
+
+out_install() {
+    cd "$cur_dir"
+
+    rm -rf "${source_file}"
+    rm -rf "${source_file}.tar.gz"
+
+    rm install.sh
 }
 
 # Install Voixa
@@ -244,7 +259,7 @@ install_voixa() {
     print_info "install"
     pre_install
     env_install
-#out_install
+    out_install
 }
 
 #=============================================================================#
