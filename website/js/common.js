@@ -1,8 +1,5 @@
 /// <reference types="aws-sdk" />
 
-const REGION = "us-east-1";
-// Need to be set for your pool id
-const POOL_ID = "your_pool_id";
 const TABLE_NAME = "user_subscribe";
 const USER_ID = "test_user_uuid";
 

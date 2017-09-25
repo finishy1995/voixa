@@ -592,6 +592,108 @@
             "DependsOn": [
                 "LambdaAlexaSkill"
             ]
+        },
+        "CognitoIdentityPool": {
+            "Type": "AWS::Cognito::IdentityPool",
+            "Properties" : {
+                "IdentityPoolName" : "voixa_identity_pool",
+                "AllowUnauthenticatedIdentities" : true
+            }
+        },
+        "IAMCognitoUnauth": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Federated": "cognito-identity.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRoleWithWebIdentity",
+                        "Condition": {
+                            "StringEquals": {
+                                "cognito-identity.amazonaws.com:aud": {"Ref" : "CognitoIdentityPool"}
+                            },
+                            "ForAnyValue:StringLike": {
+                                "cognito-identity.amazonaws.com:amr": "unauthenticated"
+                            }
+                        }
+                    }
+                    ]
+                },
+                "Path": "/",
+                "RoleName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            {
+                                "Ref": "AWS::Region"
+                            },
+                            "voixa-cognito-unauth"
+                        ]
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyName": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "voixa-cognito-unauth-policy"
+                                ]
+                            ]
+                        },
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "mobileanalytics:PutEvents",
+                                        "cognito-sync:*"
+                                    ],
+                                    "Resource": [
+                                        "*"
+                                    ]
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "dynamodb:*"
+                                    ],
+                                    "Resource": [
+                                        { "Fn::GetAtt": ["DDBNewsTable", "Arn"] },
+                                        { "Fn::GetAtt": ["DDBSiteTable", "Arn"] },
+                                        { "Fn::GetAtt": ["DDBUserSubscribeTable", "Arn"] }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "DependsOn": [
+                "CognitoIdentityPool",
+                "DDBNewsTable",
+                "DDBSiteTable",
+                "DDBUserSubscribeTable"
+            ]
+        },
+        "CognitoPolicy": {
+            "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+            "Properties" : {
+                "IdentityPoolId" : {"Ref" : "CognitoIdentityPool"},
+                "Roles" : {"unauthenticated": { "Fn::GetAtt" : [ "IAMCognitoUnauth", "Arn" ] }}
+            },
+            "DependsOn": [
+                "IAMCognitoUnauth",
+                "CognitoIdentityPool"
+            ]
         }
     },
     "Outputs" : {
