@@ -581,6 +581,17 @@
                 "LambdaTextSummarization",
                 "S3FullNewsStoredBucket"
             ]
+        },
+        "PermissionForAlexaToInvokeLambda": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "FunctionName": { "Ref": "LambdaAlexaSkill" },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "alexa-appkit.amazon.com"
+            },
+            "DependsOn": [
+                "LambdaAlexaSkill"
+            ]
         }
     },
     "Outputs" : {
