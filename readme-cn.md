@@ -117,6 +117,14 @@ aws configure --profile ${your_profile_name}
 ```sh
 wget --no-check-certificate https://raw.githubusercontent.com/finishy1995/voixa/master/install.sh && chmod u+x install.sh && ./install.sh
 ```
+### 配置 Alexa
+
+在 [Amazon Developer 网站](https://developer.amazon.com/) 上配置自己的 Alexa Skill。
+其中，Lambda Arn 可以在 AWS CloudFormation 的 Outputs 中获取。
+
+### 自定义网站订阅
+
+打开 AWS CloudFormation 的 Outputs 中提供的静态网址，配置自己的订阅信息。
 
 
 遇到了任何问题，请直接提交，谢谢！

@@ -275,7 +275,7 @@ out_install() {
     rm -rf "${source_file}"
     rm -rf "${source_file}.tar.gz"
 
-#rm install.sh
+    rm install.sh
 }
 
 # Install Voixa
