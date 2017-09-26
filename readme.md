@@ -13,7 +13,7 @@
 ## [Introduction](id:Introduction)
 
 
-**ps: If there is any questions or suggestions, please contact *[david.wang@finishy.cn](mailto:david.wang@finishy.cn)*。**
+**ps: If there is any questions or suggestions, please contact *[david.wang@finishy.cn](mailto:david.wang@finishy.cn)*.**
 
 Voixa is a sample project using Amazon Alexa. In this project, we want to use Alexa and Echo to read the news that users are really interested in from the tons of news each day. Serverless architecture is used in this project to crawl data from the specified websites by users. Users can also specify keyword that they are interested in and Echo can read news related to the specified keywords.
 
