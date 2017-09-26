@@ -428,7 +428,9 @@
                                     ],
                                     "Resource": [
                                         { "Fn::GetAtt": ["S3FullNewsStoredBucket", "Arn"] },
-                                        { "Fn::GetAtt": ["S3ShortNewsStoredBucket", "Arn"] }
+                                        { "Fn::GetAtt": ["S3ShortNewsStoredBucket", "Arn"] },
+                                        {"Fn::Join": ["", [{ "Fn::GetAtt": ["S3FullNewsStoredBucket", "Arn"] }, "/*"]]},
+                                        {"Fn::Join": ["", [{ "Fn::GetAtt": ["S3ShortNewsStoredBucket", "Arn"] }, "/*"]]}
                                     ]
                                 }
                             ]

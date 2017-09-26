@@ -12,8 +12,8 @@
 cur_dir=`pwd`
 
 # Source
-source_file="voixa-0.8.1"
-source_url="https://github.com/finishy1995/voixa/archive/v0.8.1.tar.gz"
+source_file="voixa-0.9.1"
+source_url="https://github.com/finishy1995/voixa/archive/v0.9.1.tar.gz"
 
 # Whether root or not
 is_root=false
@@ -66,7 +66,9 @@ download() {
 # Handle S3 source bucket
 aws_s3_source_bucket_handle() {
     # Create a new bucket
-    bucket_create_flag=`aws s3api create-bucket --bucket ${1} --profile ${aws_profile} --region ${aws_region} --create-bucket-configuration LocationConstraint=${aws_region}`
+    # TODO Should fix it to match every region
+    # bucket_create_flag=`aws s3api create-bucket --bucket ${1} --profile ${aws_profile} --region ${aws_region} --create-bucket-configuration LocationConstraint=${aws_region}`
+    bucket_create_flag=`aws s3api create-bucket --bucket ${1} --profile ${aws_profile} --region ${aws_region}`
 
     if [ "$bucket_create_flag" = "" ];then
         echo -e "[${red}Error${plain}] Failed to create bucket ${1}, please try another legal bucket name."
@@ -200,7 +202,13 @@ env_install() {
 
     echo -e "[${green}Info${plain}] AWS CloudFormation stack creating ... (It may take about 4 minutes)"
 
-cf_response=`aws cloudformation create-stack --stack-name ${aws_stack} --template-url https://s3-${aws_region}.amazonaws.com/${aws_s3_source_bucket}/template/aws-template-with-cognito --profile ${aws_profile} --region ${aws_region} --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=FullNewsStoredBucketName,ParameterValue=${aws_s3_full_txt_bucket} ParameterKey=ShortNewsStoredBucketName,ParameterValue=${aws_s3_short_txt_bucket} ParameterKey=StaticWebBucketName,ParameterValue=${aws_s3_static_web_bucket} ParameterKey=SourceBucketName,ParameterValue=${aws_s3_source_bucket}`
+    if [ "$aws_region" = "us-east-1" ];then
+        template_url="https://s3.amazonaws.com/${aws_s3_source_bucket}/template/aws-template-with-cognito"
+    else
+        template_url="https://s3-${aws_region}.amazonaws.com/${aws_s3_source_bucket}/template/aws-template-with-cognito"
+    fi
+
+cf_response=`aws cloudformation create-stack --stack-name ${aws_stack} --template-url ${template_url} --profile ${aws_profile} --region ${aws_region} --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=FullNewsStoredBucketName,ParameterValue=${aws_s3_full_txt_bucket} ParameterKey=ShortNewsStoredBucketName,ParameterValue=${aws_s3_short_txt_bucket} ParameterKey=StaticWebBucketName,ParameterValue=${aws_s3_static_web_bucket} ParameterKey=SourceBucketName,ParameterValue=${aws_s3_source_bucket}`
 
     if [ "$cf_response" = "" ];then
         echo -e "[${red}Error${plain}] Failed to create stack, please try again later."
@@ -233,16 +241,32 @@ cf_response=`aws cloudformation create-stack --stack-name ${aws_stack} --templat
     # Get cognito pool id
     for i in `aws cognito-identity list-identity-pools --max-results 10 --profile ${aws_profile} --output text --query IdentityPools --region ${aws_region}`
     do
-        pool_name=`echo ${i} | cut -f 2`
+        pool_name=`echo ${i}`
         if [ "$pool_name" = "voixa_identity_pool" ];then
-            aws_cognito_pool_id=`echo ${i} | cut -f 1`
             break
         fi
+        aws_cognito_pool_id=`echo ${i}`
     done
 
-    echo "const REGION = '${aws_region}';const POOL_ID = '${aws_cognito_pool_id}';" > ./js/config.js
+    echo "const REGION='${aws_region}'; const POOL_ID='${aws_cognito_pool_id}'" > ./js/config.js
 
-    aws s3 cp ./ s3://${aws_s3_static_web_bucket}/ --recursive
+    aws s3 cp ./ s3://${aws_s3_static_web_bucket}/ --recursive --profile ${aws_profile}
+    echo -e "[${green}Info${plain}] Static web files uploaded."
+    echo
+
+    # Add test data in DynamoDB
+    echo -e "[${green}Info${plain}] Yesterday news data getting ..."
+    echo "{\"user_id\":{\"S\":\"test_user_uuid\"},\"user_subscription\": {\"M\": {\"AWS-News\":{\"S\":\"Amazon\"}}}}" > ./data.json
+
+    ddb_input=`aws dynamodb put-item --table-name user_subscribe --item file://data.json --profile ${aws_profile} --region ${aws_region}`
+    lambda_invoke=`aws lambda invoke --function-name voixa-crawler-commander --profile ${aws_profile} --region ${aws_region} output`
+    rm output
+
+    echo -e "[${green}Info${plain}] Yesterday news data getted."
+    echo
+
+    echo -e "[${green}Info${plain}] Voixa project have been builded successfully, config it in your develop account and enjoy your alexa skill!"
+    echo
 }
 
 out_install() {
@@ -251,7 +275,7 @@ out_install() {
     rm -rf "${source_file}"
     rm -rf "${source_file}.tar.gz"
 
-    rm install.sh
+#rm install.sh
 }
 
 # Install Voixa
