@@ -4,9 +4,9 @@
 ## Table of Content
 
 - [Introduction](#Introduction)
-- [Team Members](#Team Members)
+- [Team Members](#Team_Members)
 - [Architecture](#Architecture)
-- [Future Works](#Future Works)
+- [Future Works](#Future_Works)
 - [Deployment](#Deployment)
 
 
@@ -19,7 +19,7 @@ Voixa is a sample project using Amazon Alexa. In this project, we want to use Al
 
 This demo is for experimental purpose only. If you want to deploy your own application in cloud, please refer to the official website of AWS for more details.
 
-## [Team Members](id:Team Members)
+## [Team Members](id:Team_Members)
 
 **Big Five Wolves Team**
 1. ***@Bob Zhang***
@@ -40,7 +40,7 @@ The news reading by Echo is implemented as follows：
 ![News Reading Architecture](./Alexa_Skill.jpeg)
 
 
-## [Future Works](id:Future Works)
+## [Future Works](id:Future_Works)
 
 - One button deployment using AWS CloudFormation
 - Add support to more websites and keywords
