@@ -1,28 +1,27 @@
 # Voixa [Amazon Alexa Demo]
 
 
-## 目录
+## Table of Content
 
-- [简介](#简介)
-- [特别感谢](#特别感谢)
-- [项目架构](#项目架构)
-- [更新计划](#更新计划)
-- [项目部署](#项目部署)
-
-
-## [简介](id:简介)
+- [Introduction](#Introduction)
+- [Team Members](#Team Members)
+- [Architecture](#Architecture)
+- [Future Works](#Future Works)
+- [Deployment](#Deployment)
 
 
-**特别提醒: 本如果有任何疑问和建议，请联系邮箱：*[david.wang@finishy.cn](mailto:david.wang@finishy.cn)*。**
-
-Voixa是一个Amazon Alexa的示例项目。在本示例项目中，考虑到资讯爆炸的情况，我们想要利用Alexa自动播报真正感兴趣的话题。利用Serverless无服务器架构，实现了订阅指定网站的指定关键词（例：网站 AWS，关键词 大数据），利用Alexa自动播报相关资讯的简讯。
-
-本演示仅用于试验和参考用途，如果您想在云端开发自己的应用，请登录AWS官网查看详细信息。
+## [Introduction](id:Introduction)
 
 
-## [特别感谢](id:特别感谢)
+**ps: If there is any questions or suggestions, please contact *[david.wang@finishy.cn](mailto:david.wang@finishy.cn)*。**
 
-**Big Five Wolves**
+Voixa is a sample project using Amazon Alexa. In this project, we want to use Alexa and Echo to read the news that users are really interested in from the tons of news each day. Serverless architecture is used in this project to crawl data from the specified websites by users. Users can also specify keyword that they are interested in and Echo can read news related to the specified keywords.
+
+This demo is for experimental purpose only. If you want to deploy your own application in cloud, please refer to the official website of AWS for more details.
+
+## [Team Members](id:Team Members)
+
+**Big Five Wolves Team**
 1. ***@Bob Zhang***
 2. ***@Nick Jiang***
 3. ***@Haipeng Qi***
@@ -30,24 +29,24 @@ Voixa是一个Amazon Alexa的示例项目。在本示例项目中，考虑到资
 5. ***@David Wang***
 
 
-## [项目架构](id:项目架构)
+## [Architecture](id:Architecture)
 
-采用如下架构搭建数据采集架构：
+The data collection architecture is as follows：
 
-![数据采集架构](./Data_Collect.jpeg)
+![Data Collection Architecture](./Data_Collect.jpeg)
 
-采用如下架构实现Alexa播报新闻：
+The news reading by Echo is implemented as follows：
 
-![新闻播报架构](./Alexa_Skill.jpeg)
-
-
-## [更新计划](id:更新计划)
-
-- 编写脚本，结合 AWS CloudFormation 自动部署
-- 添加更多的网站和内容组合
-- 完善前端UI
+![News Reading Architecture](./Alexa_Skill.jpeg)
 
 
-## [项目部署](id:项目部署)
+## [Future Works](id:Future Works)
 
-参考架构图进行部署，注意权限设置。
+- One button deployment using AWS CloudFormation
+- Add support to more websites and keywords
+- Polish Frontend UI
+
+
+## [Deployment](id:Deployment)
+
+Please refer to the reference architecture for deployment and pay attention to the permission setting.
