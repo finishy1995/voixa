@@ -1,4 +1,4 @@
-# Voixa [Amazon Alexa Demo]
+# Voixa  [Amazon Alexa Demo]
 
 
 ## 目录
@@ -7,6 +7,8 @@
 - [特别感谢](#特别感谢)
 - [项目架构](#项目架构)
 - [版本信息](#版本信息)
+    - [v0.8](#v0.8)
+    - [v0.9](#v0.9)
 - [更新计划](#更新计划)
 - [项目部署](#项目部署)
 
@@ -18,7 +20,7 @@
 
 Voixa是一个Amazon Alexa的示例项目。在本示例项目中，考虑到资讯爆炸的情况，我们想要利用Alexa自动播报真正感兴趣的话题。利用Serverless无服务器架构，实现了订阅指定网站的指定关键词（例：网站 AWS，关键词 大数据），利用Alexa自动播报相关资讯的简讯。
 
-本演示仅用于试验和参考用途，如果您想在云端开发自己的应用，请登录AWS官网查看详细信息。
+本演示仅用于试验和参考用途，如果您想在云端开发自己的应用，请登录AWS官网查看详细信息。 [English](https://github.com/finishy1995/voixa)
 
 
 ## [特别感谢](id:特别感谢)
@@ -63,7 +65,7 @@ Voixa是一个Amazon Alexa的示例项目。在本示例项目中，考虑到资
 
 ### [v0.9](id:v0.9)
 
-内部测试版本，这些版本功能基本满足最低搭建要求，部分操作系统和条件可能会存在 Bug。
+内部测试版本，这些版本功能满足最低搭建要求，不保证所有操作系统和安装条件通过。
 
 - v0.9.1
     - 安装脚本自动化
@@ -73,20 +75,20 @@ Voixa是一个Amazon Alexa的示例项目。在本示例项目中，考虑到资
 
 ## [更新计划](id:更新计划)
 
-[x] 编写启动脚本，结合 AWS CloudFormation 自动部署
-[x] Readme 详细部署步骤
-[x] 加入 Cognito 提高安全性
-[x] 添加项目架构图
-[ ] 英文Readme
-[ ] 支持更多的操作系统运行脚本
-[ ] 添加更多的网站和内容组合
-[ ] 完善前端UI
-[ ] 网页改为App，支持 Android & IOS
+- [x] 编写启动脚本，结合 AWS CloudFormation 自动部署
+- [x] Readme 详细部署步骤
+- [x] 加入 Cognito 提高安全性
+- [x] 添加项目架构图
+- [x] Readme 中英文
+- [ ] 支持更多的操作系统运行脚本
+- [ ] 添加更多的网站和内容组合
+- [ ] 完善静态网站功能和页面效果
+- [ ] 添加App，支持 Android & IOS
 
 
 ## [项目部署](id:项目部署)
 
-**提醒:** 以下步骤在具备 aws-cli 和 Mac 系统下测试通过，其他情况下如有问题，请提交问题，谢谢！
+**提醒: 以下步骤在具备 aws-cli 和 Mac 系统下测试通过，其他情况下如有问题，请提交问题，谢谢！**
 
 ### 前提条件
 
@@ -104,7 +106,7 @@ sudo pip install awscli
 
 ### 配置 aws-cli
 
-如果您已经安装好了 aws-cli，可以跳过此步骤
+如果您已经配置好了 aws-cli，可以跳过此步骤
 
 ```sh
 aws configure --profile ${your_profile_name}
@@ -125,7 +127,4 @@ wget --no-check-certificate https://raw.githubusercontent.com/finishy1995/voixa/
 ### 自定义网站订阅
 
 打开 AWS CloudFormation 的 Outputs 中提供的静态网址，配置自己的订阅信息。
-
-
-遇到了任何问题，请直接提交，谢谢！
 
