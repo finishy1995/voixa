@@ -60,7 +60,7 @@ def news_store_to_s3(topic, contain):
         TableName = TABLE_NAME,
         Item = {
             'news_id': {
-                'S': topic + '-' + SITE
+                'S': topic.replace(',', '_') + '-' + SITE
             },
             'site_id': {
                 'S': SITE

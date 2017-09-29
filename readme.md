@@ -4,7 +4,7 @@
 ## Contents
 
 - [Introduction](#Introduction)
-- [Team Members](#Team_Members)
+- [Contributors](#Contributors)
 - [Architecture](#Architecture)
 - [Version Information](#Version_Information)
     - [v0.8](#v0.8)
@@ -22,7 +22,7 @@ Voixa is a sample project using Amazon Alexa. In this project, we want to use Al
 
 This demo is for experimental purpose only. If you want to deploy your own application in cloud, please refer to the official website of AWS for more details. [中文版本](https://github.com/finishy1995/voixa/blob/master/readme-cn.md)
 
-## [Team Members](id:Team_Members)
+## [Contributors](id:Contributors)
 
 **Big Five Wolves Team**
 1. ***@Bob Zhang***
@@ -30,6 +30,8 @@ This demo is for experimental purpose only. If you want to deploy your own appli
 3. ***@Haipeng Qi***
 4. ***@Andrew Ren***
 5. ***@David Wang***
+
+**@Jason Xue**
 
 
 ## [Architecture](id:Architecture)
@@ -70,6 +72,11 @@ Version for internal test. The following versions meet the minimum requirements 
     - One step deployment
     - Fix policy bug in AWS CloudFormation
     - Rewrite Readme.md files
+    
+- v0.9.2
+    - Fix S3 "," bug
+    - Limit aws regions in [us-east-1, eu-west-1]
+    - Fix S3 create bucket API bug
 
 
 ## [Future Works](id:Future_Works)

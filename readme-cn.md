@@ -32,6 +32,8 @@ Voixa是一个Amazon Alexa的示例项目。在本示例项目中，考虑到资
 4. ***@Andrew Ren***
 5. ***@David Wang***
 
+**@Jason Xue**
+
 
 ## [项目架构](id:项目架构)
 
@@ -71,6 +73,11 @@ Voixa是一个Amazon Alexa的示例项目。在本示例项目中，考虑到资
     - 安装脚本自动化
     - 修复 AWS CloudFormation 权限不足的 Bug
     - 重写 Readme
+    
+-v0.9.2
+    - 修复 S3 文件名包含 “,” 的 bug
+    - 限制可选择的 region 为 [us-east-1, eu-west-1]
+    - 修复 S3 调用 API 创建存储桶可能造成的 bug
     
 
 ## [更新计划](id:更新计划)

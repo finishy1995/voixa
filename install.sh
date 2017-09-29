@@ -12,8 +12,8 @@
 cur_dir=`pwd`
 
 # Source
-source_file="voixa-0.9.1"
-source_url="https://github.com/finishy1995/voixa/archive/v0.9.1.tar.gz"
+source_file="voixa-0.9.2"
+source_url="https://github.com/finishy1995/voixa/archive/v0.9.2.tar.gz"
 
 # Whether root or not
 is_root=false
@@ -68,7 +68,7 @@ aws_s3_source_bucket_handle() {
     # Create a new bucket
     # TODO Should fix it to match every region
     # bucket_create_flag=`aws s3api create-bucket --bucket ${1} --profile ${aws_profile} --region ${aws_region} --create-bucket-configuration LocationConstraint=${aws_region}`
-    bucket_create_flag=`aws s3api create-bucket --bucket ${1} --profile ${aws_profile} --region ${aws_region}`
+    bucket_create_flag=`aws s3 mb s3://${1} --profile ${aws_profile} --region ${aws_region}`
 
     if [ "$bucket_create_flag" = "" ];then
         echo -e "[${red}Error${plain}] Failed to create bucket ${1}, please try another legal bucket name."
@@ -159,9 +159,17 @@ pre_install() {
     read -p "(Default decision: default):" aws_profile
     [ -z "$aws_profile" ] && aws_profile="default"
 
-    echo "Please choose your AWS configure region id [aws_region_id]:"
-    read -p "(Default decision: us-east-1):" aws_region
-    [ -z "$aws_region" ] && aws_region="us-east-1"
+    while [ "1" = "1" ]
+    do
+        echo "Please choose your AWS configure region id [us-east-1, eu-west-1]:"
+        read -p "(Default decision: us-east-1):" aws_region
+        [ -z "$aws_region" ] && aws_region="us-east-1"
+        if [ "$aws_region" != "us-east-1" ] && [[ "$aws_region" != "eu-west-1" ]];then
+            echo -e "[${red}Error${plain}] We only support Alexa Skill using Lambda in us-east-1 and eu-west-1."
+        else
+            break
+        fi
+    done
 
     echo -e "[${green}Info${plain}] AWS configuration setted."
     echo
