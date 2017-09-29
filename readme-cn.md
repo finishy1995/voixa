@@ -128,10 +128,90 @@ wget --no-check-certificate https://raw.githubusercontent.com/finishy1995/voixa/
 ```
 ### 配置 Alexa
 
-在 [Amazon Developer 网站](https://developer.amazon.com/) 上配置自己的 Alexa Skill。
-其中，Lambda Arn 可以在 AWS CloudFormation 的 Outputs 中获取。
+在 [Amazon Developer 网站](https://developer.amazon.com/) 上配置自己的 Alexa Skill。您可以参考如下配置信息。
+
+**Skill Information**
+
+![Skill Information](./img/Skill_Information.jpeg)
+
+**Interaction Model**
+
+![Interaction Model](./img/Interaction_Model.jpeg)
+
+- Intent Schema
+```Json
+{
+    "intents": [
+        {
+            "intent": "AMAZON.ResumeIntent"
+        },
+        {
+            "intent": "AMAZON.PauseIntent"
+        },
+        {
+            "slots": [
+                {
+                    "name": "blog",
+                    "type": "LIST_OF_BLOG"
+                }
+            ],
+            "intent": "MyBlogIsIntent"
+        },
+        {
+            "intent": "WhatsMyBlogIntent"
+        },
+        {
+            "intent": "AMAZON.HelpIntent"
+        }
+    ]
+}
+```
+- Sample Utterances
+```
+MyBlogIsIntent my favorite blog is {blog}
+WhatsMyBlogIntent what's my favorite blog
+WhatsMyBlogIntent what is my favorite blog
+WhatsMyBlogIntent what's my blog
+WhatsMyBlogIntent what is my blog
+WhatsMyBlogIntent my blog
+WhatsMyBlogIntent my favorite blog
+WhatsMyBlogIntent get my blog
+WhatsMyBlogIntent get my favorite blog
+WhatsMyBlogIntent give me my favorite blog
+WhatsMyBlogIntent give me my blog
+WhatsMyBlogIntent what my blog is
+WhatsMyBlogIntent what my favorite blog is
+WhatsMyBlogIntent yes
+WhatsMyBlogIntent yup
+WhatsMyBlogIntent sure
+WhatsMyBlogIntent yes pleaseBlog
+```
+
+**Configuration**
+
+![Configuration](./img/Configuration.jpeg)
+
+Lambda Arn 可以在 AWS CloudFormation 的 Outputs 中获取。
+
+**Test**
+
+![Test](./img/Test.jpeg)
+
+"Service Simulator" 在本项目中不应该被填入。
+
+**Publishing Information**
+
+![Publishing Information](./img/Publishing_Information1.jpeg)
+![Publishing Information](./img/Publishing_Information2.jpeg)
+
+**Privacy & Compliance**
+
+![Privacy & Compliance](./img/Privacy_Compliance.jpeg)
 
 ### 自定义网站订阅
 
 打开 AWS CloudFormation 的 Outputs 中提供的静态网址，配置自己的订阅信息。
 
+### Alexa Simulator
+
+您可以用 Echo／Echo dot 测试这个项目，也可以使用模拟网站 [echosim](https://echosim.io/welcome)

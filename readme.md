@@ -128,10 +128,90 @@ wget --no-check-certificate https://raw.githubusercontent.com/finishy1995/voixa/
 
 ### Configured Alexa
 
-You can configured the Alexa Skill in [Amazon Developer](https://developer.amazon.com/).
-During configuration，Lambda Arn can be found in AWS CloudFormation outputs.
+You can configured the Alexa Skill in [Amazon Developer](https://developer.amazon.com/). The reference configuration is as follows.
+
+**Skill Information**
+
+![Skill Information](./img/Skill_Information.jpeg)
+
+**Interaction Model**
+
+![Interaction Model](./img/Interaction_Model.jpeg)
+
+- Intent Schema
+```Json
+{
+    "intents": [
+        {
+            "intent": "AMAZON.ResumeIntent"
+        },
+        {
+            "intent": "AMAZON.PauseIntent"
+        },
+        {
+            "slots": [
+                {
+                    "name": "blog",
+                    "type": "LIST_OF_BLOG"
+                }
+            ],
+            "intent": "MyBlogIsIntent"
+        },
+        {
+            "intent": "WhatsMyBlogIntent"
+        },
+        {
+            "intent": "AMAZON.HelpIntent"
+        }
+    ]
+}
+```
+- Sample Utterances
+```
+MyBlogIsIntent my favorite blog is {blog}
+WhatsMyBlogIntent what's my favorite blog
+WhatsMyBlogIntent what is my favorite blog
+WhatsMyBlogIntent what's my blog
+WhatsMyBlogIntent what is my blog
+WhatsMyBlogIntent my blog
+WhatsMyBlogIntent my favorite blog
+WhatsMyBlogIntent get my blog
+WhatsMyBlogIntent get my favorite blog
+WhatsMyBlogIntent give me my favorite blog
+WhatsMyBlogIntent give me my blog
+WhatsMyBlogIntent what my blog is
+WhatsMyBlogIntent what my favorite blog is
+WhatsMyBlogIntent yes
+WhatsMyBlogIntent yup
+WhatsMyBlogIntent sure
+WhatsMyBlogIntent yes pleaseBlog
+```
+
+**Configuration**
+
+![Configuration](./img/Configuration.jpeg)
+
+Lambda Arn can be found in AWS CloudFormation outputs.
+
+**Test**
+
+![Test](./img/Test.jpeg)
+
+"Service Simulator" should not be filled in.
+
+**Publishing Information**
+
+![Publishing Information](./img/Publishing_Information1.jpeg)
+![Publishing Information](./img/Publishing_Information2.jpeg)
+
+**Privacy & Compliance**
+
+![Privacy & Compliance](./img/Privacy_Compliance.jpeg)
 
 ### Specify keywords
 
 Open the web page url which can be found in AWS CloudFormation outputs and specify keywords which you would like Alexa to read.
 
+### Alexa Simulator
+
+You can test this Alexa Skill in your own Echo/Echo dot or using [echosim](https://echosim.io/welcome)

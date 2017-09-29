@@ -273,7 +273,7 @@ cf_response=`aws cloudformation create-stack --stack-name ${aws_stack} --templat
     echo -e "[${green}Info${plain}] Yesterday news data getted."
     echo
 
-    echo -e "[${green}Info${plain}] Voixa project have been builded successfully, config it in your develop account and enjoy your alexa skill!"
+    echo -e "[${green}Info${plain}] Voixa project have been builded successfully, config it in your develop account and enjoy your alexa skill! (https://github.com/finishy1995/voixa for more details)"
     echo
 }
 
